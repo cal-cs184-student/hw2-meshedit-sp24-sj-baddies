@@ -1,5 +1,7 @@
 #include "student_code.h"
+#include "CGL/vector2D.h"
 #include "mutablePriorityQueue.h"
+#include <vector>
 
 using namespace std;
 
@@ -16,7 +18,12 @@ namespace CGL
   std::vector<Vector2D> BezierCurve::evaluateStep(std::vector<Vector2D> const &points)
   { 
     // TODO Part 1.
-    return std::vector<Vector2D>();
+    std::vector<Vector2D> intermediate_points;
+    for(int i = 0; i < points.size() - 1; i++){
+      Vector2D p_i = ((1 - t) * points.at(i)) + t * points.at(i + 1);
+      intermediate_points.push_back(p_i);
+    }
+    return intermediate_points;
   }
 
   /**
@@ -30,7 +37,12 @@ namespace CGL
   std::vector<Vector3D> BezierPatch::evaluateStep(std::vector<Vector3D> const &points, double t) const
   {
     // TODO Part 2.
-    return std::vector<Vector3D>();
+    std::vector<Vector3D> intermediate_points;
+    for(int i = 0; i < points.size() - 1; i++){
+      Vector3D p_i = ((1 - t) * points.at(i)) + t * points.at(i + 1);
+      intermediate_points.push_back(p_i);
+    }
+    return intermediate_points;
   }
 
   /**
@@ -43,7 +55,10 @@ namespace CGL
   Vector3D BezierPatch::evaluate1D(std::vector<Vector3D> const &points, double t) const
   {
     // TODO Part 2.
-    return Vector3D();
+    if(points.size() == 1){
+      return points.at(0);
+    }
+    return evaluate1D(evaluateStep(points, t), t);
   }
 
   /**
@@ -56,7 +71,11 @@ namespace CGL
   Vector3D BezierPatch::evaluate(double u, double v) const 
   {  
     // TODO Part 2.
-    return Vector3D();
+    std::vector<Vector3D> intermediate_points;
+    for(int i = 0; i < controlPoints.size(); i++){
+      intermediate_points.push_back(evaluate1D(controlPoints[i], u));
+    }
+    return evaluate1D(intermediate_points, v);
   }
 
   Vector3D Vertex::normal( void ) const
