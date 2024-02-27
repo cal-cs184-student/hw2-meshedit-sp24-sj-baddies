@@ -81,7 +81,6 @@ namespace CGL
 
   Vector3D Vertex::normal( void ) const
   {
-    // TODO Part 3.
     // Returns an approximate unit normal at this vertex, computed by
     // taking the area-weighted average of the normals of neighboring
     // triangles, then normalizing.
@@ -107,7 +106,6 @@ namespace CGL
 
   EdgeIter HalfedgeMesh::flipEdge( EdgeIter e0 )
   {
-    // TODO Part 4.
     // This method should flip the given edge and return an iterator to the flipped edge.
 
     if (e0->isBoundary()) {
@@ -168,27 +166,14 @@ namespace CGL
 
   VertexIter HalfedgeMesh::splitEdge( EdgeIter e0 )
   {
-    // TODO Part 5.
     // This method should split the given edge and return an iterator to the newly inserted vertex.
     // The halfedge of this vertex should point along the edge that was split, rather than the new edges.
 
-    // ALLOCATE NEW HALFEDGES
-    HalfedgeIter h10 = newHalfedge();
-    HalfedgeIter h11 = newHalfedge();
-    HalfedgeIter h12 = newHalfedge();
-    HalfedgeIter h13 = newHalfedge();
-    HalfedgeIter h14 = newHalfedge();
-    HalfedgeIter h15 = newHalfedge();
-    // ALLOCATE NEW EDGES
-    EdgeIter e5 = newEdge();
-    EdgeIter e6 = newEdge();
-    EdgeIter e7 = newEdge();
-    // ALLOCATE NEW VERTEX
-    VertexIter v4 = newVertex();
-    // ALLOCATE NEW FACES
-    FaceIter f2 = newFace();
-    FaceIter f3 = newFace();
+    if (e0->isBoundary()) {
+        return e0->halfedge()->vertex();
+    }
 
+    // COLLECT =========================
     HalfedgeIter h0 = e0->halfedge();
     HalfedgeIter h1 = h0->next();
     HalfedgeIter h2 = h1->next();
@@ -212,17 +197,44 @@ namespace CGL
 
     FaceIter f0 = h0->face();
     FaceIter f1 = h3->face();
-    
+    // COLLECT =========================
+
+    // ALLOCATE NEW HALFEDGES
+    HalfedgeIter h10 = newHalfedge();
+    HalfedgeIter h11 = newHalfedge();
+    HalfedgeIter h12 = newHalfedge();
+    HalfedgeIter h13 = newHalfedge();
+    HalfedgeIter h14 = newHalfedge();
+    HalfedgeIter h15 = newHalfedge();
+    // ALLOCATE NEW EDGES
+    EdgeIter e5 = newEdge();
+    EdgeIter e6 = newEdge();
+    EdgeIter e7 = newEdge();
+    // ALLOCATE NEW VERTEX
+    VertexIter v4 = newVertex();
+    // ALLOCATE NEW FACES
+    FaceIter f2 = newFace();
+    FaceIter f3 = newFace();
+
+    // REASSIGN ===========================
+    // next, twin, vertex, edge, face
     h0->setNeighbors(h13, h3, v0, e0, f2);
     h1->setNeighbors(h12, h6, v1, e1, f1);
     h2->setNeighbors(h0, h7, v2, e2, f2);
     h3->setNeighbors(h4, h0, v4, e0, f3);
     h4->setNeighbors(h11, h8, v0, e3, f3);
     h5->setNeighbors(h14, h9, v3, e4, f0);
-    h6->setNeighbors(h9, h1, v2, e1, f1);
-    h7->setNeighbors(h6, h2, v0, e2, f2);
-    h8->setNeighbors(h7, h4, v3, e3, f3);
-    h9->setNeighbors(h8, h5, v1, e4, f0);
+
+    // h6->setNeighbors(h9, h1, v2, e1, f1);
+    // h7->setNeighbors(h6, h2, v0, e2, f2);
+    // h8->setNeighbors(h7, h4, v3, e3, f3);
+    // h9->setNeighbors(h8, h5, v1, e4, f0);
+
+    h6->setNeighbors(h6->next(), h1, v2, e1, h6->face());
+    h7->setNeighbors(h7->next(), h2, v0, e2, h7->face());
+    h8->setNeighbors(h8->next(), h4, v3, e3, h8->face());
+    h9->setNeighbors(h9->next(), h5, v1, e4, h9->face());
+    
     h10->setNeighbors(h5, h11, v4, e5, f0);
     h11->setNeighbors(h3, h10, v3, e5, f3);
     h12->setNeighbors(h15, h13, v2, e6, f1);
@@ -237,10 +249,10 @@ namespace CGL
     v4->halfedge() = h3;
 
     e0->halfedge() = h0;
-    e1->halfedge() = h1;
-    e2->halfedge() = h2;
-    e3->halfedge() = h4;
-    e4->halfedge() = h5;
+    e1->halfedge() = h6;
+    e2->halfedge() = h7;
+    e3->halfedge() = h8;
+    e4->halfedge() = h9;
     e5->halfedge() = h10;
     e6->halfedge() = h12;
     e7->halfedge() = h15;
@@ -249,8 +261,9 @@ namespace CGL
     f1->halfedge() = h1;
     f2->halfedge() = h2;
     f3->halfedge() = h4;
-
-    return e0->halfedge()->vertex();
+    // REASSIGN ===========================
+    v4->position = 0.5 * (v0->position + v1->position);
+    return v4;
   }
 
 
