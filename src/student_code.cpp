@@ -289,5 +289,25 @@ namespace CGL
 
     // 5. Copy the new vertex positions into final Vertex::position.
 
+    VertexIter v = mesh.verticesBegin();
+    VertexIter nextVert = v;
+    for (v; v != mesh.verticesEnd(); v++){
+      v->
+    }
+    
+    EdgeIter e = mesh.edgesBegin();
+    EdgeIter nextEdge = e;
+
+    for(e; e != mesh.edgesEnd(); e = nextEdge) {
+      nextEdge++;
+
+      if (!e->isNew) {
+        mesh.splitEdge(e);
+      }
+    }
+
+
+
+
   }
 }
