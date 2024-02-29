@@ -93,7 +93,6 @@ namespace CGL
 
       weighted += h->face()->normal();
 
-      cout << v->position << endl;
       h = h_twin->next();
 
     } while(h != this->halfedge());
